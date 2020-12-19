@@ -26,4 +26,4 @@ There is just one public method **"resolve"** which you should use for resolving
 
     const expression = 'IF(true=true,SUM(10,20,5),1000/0)';
     const resolver = new Resolver();
-    consl result = resolver.resolve(expression); 
+    const result = resolver.resolve(expression); 
