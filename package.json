@@ -1,12 +1,16 @@
 {
   "name": "formula-resolver",
-  "version": "0.1.0",
+  "version": "0.1.2",
   "description": "",
   "main": "index.js",
   "scripts": {
     "build": "npx webpack --config=webpack.config.js",
     "test": "jasmine-ts --config=jasmine.json",
     "serve": "npx webpack serve --config webpack.config.js --port 9000 --progress --profile --watch --content-base src/"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/hamed-mahdizadeh/formula-resolver.git"
   },
   "keywords": [],
   "author": "",

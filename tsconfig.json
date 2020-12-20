@@ -6,10 +6,6 @@
         "es2020",
         "ESNext"
       ],
-      "repository": {
-        "type": "git",
-        "url": "https://github.com/hamed-mahdizadeh/formula-resolver.git"
-      },
       "allowJs": true,
       "sourceMap": true,
       "rootDir": "./src",
