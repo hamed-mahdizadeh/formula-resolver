@@ -6,6 +6,8 @@
         "es2020",
         "ESNext"
       ],
+      "outDir": "dist",
+      "declaration": true,
       "allowJs": true,
       "sourceMap": true,
       "rootDir": "./src",
@@ -13,5 +15,6 @@
       "esModuleInterop": true,
       "forceConsistentCasingInFileNames": true
       },
-      "exclude": ["dist", "webpack.config.js"]
+      "include": ["**/*.ts"],
+      "exclude": ["spec","node_modules","dist", "webpack.config.js"]
   }

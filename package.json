@@ -1,8 +1,9 @@
 {
   "name": "formula-resolver",
-  "version": "0.1.2",
+  "version": "0.1.4",
   "description": "",
   "main": "index.js",
+  "files": ["src/*", "dist/*"],
   "scripts": {
     "build": "npx webpack --config=webpack.config.js",
     "test": "jasmine-ts --config=jasmine.json",
