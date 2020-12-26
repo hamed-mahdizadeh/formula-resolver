@@ -1,4 +1,6 @@
 import { ABS, AND, IF, POWER, SUM } from '../src/functions';
+import { ROUND } from '../src/functions/round';
+import { TRUNC } from '../src/functions/trunc';
 
 describe('Calculation of different functions with comma seperated string parameter', () => {
     it('SUM(100,200,1000,5) Should be "1305"', () => {
@@ -35,5 +37,20 @@ describe('Calculation of different functions with comma seperated string paramet
         const expression = '2,3';
         
         expect(POWER(expression)).toBe('8');
+    });
+    it('TRUNC(5.68) Should be "5"', () => {
+        const expression = '5.68';
+        
+        expect(TRUNC(expression)).toBe('5');
+    });
+    it('ROUND(128.6985,2) Should be "128.70"', () => {
+        const expression = '128.6985,2';
+        
+        expect(ROUND(expression)).toBe('128.70');
+    });
+    it('ROUND(128,2) Should be "128"', () => {
+        const expression = '128,2';
+        
+        expect(ROUND(expression)).toBe('128.00');
     });
 });

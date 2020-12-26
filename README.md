@@ -12,9 +12,12 @@
 * **ABS**
 * **AND**
 * **OR**
+* **ROUND**
+* **TRUNC**
 ### Other functions will be added to package in coming versions soon.
 ### You can add any custom methods in addition to built-in ones
 ### Formula should be field by the specific value and variables like cell addresses are not supported.
+
 **Example of correct formula:**
 >  125+IF(OR(false,-100,20),500,SUM(1,15,8))+10+4*5/ABS(-100)+14
 
@@ -22,7 +25,9 @@
 
 There is just one public method **"resolve"** which you should use for resolving your formula: 
 
-### **example**:
+### **import** and **usage** example:
+
+    import { Resolver } form 'node_modules/formula-resolver/dist/formula-resolver'
 
     const expression = 'IF(true=true,SUM(10,20,5),1000/0)';
     const resolver = new Resolver();

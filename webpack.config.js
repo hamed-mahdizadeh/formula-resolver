@@ -1,6 +1,6 @@
 const path = require('path');
 module.exports = {
-    entry: './src/index.ts',
+    entry: path.join(__dirname, '/src/formula-resolver.ts'),
     devtool: 'inline-source-map',
     module: {
         rules: [
@@ -24,6 +24,7 @@ module.exports = {
     },
     output: {
         filename: 'formula-resolver.js',
+        libraryTarget: 'umd',
         path: path.resolve(__dirname, 'dist'),
     },
 };

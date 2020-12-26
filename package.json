@@ -1,8 +1,9 @@
 {
   "name": "formula-resolver",
-  "version": "0.1.4",
+  "version": "0.1.11",
   "description": "",
-  "main": "index.js",
+  "main": "dist/formula-resolver.js",
+  "types": "dist",
   "files": ["src/*", "dist/*"],
   "scripts": {
     "build": "npx webpack --config=webpack.config.js",

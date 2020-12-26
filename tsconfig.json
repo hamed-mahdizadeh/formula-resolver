@@ -6,7 +6,7 @@
         "es2020",
         "ESNext"
       ],
-      "outDir": "dist",
+      "outDir": "./dist",
       "declaration": true,
       "allowJs": true,
       "sourceMap": true,
