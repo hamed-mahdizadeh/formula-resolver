@@ -6,12 +6,50 @@ import { POWER } from './functions/power';
 import { ABS } from './functions/abs';
 import { TRUNC } from './functions/trunc'
 import { ROUND } from './functions/round';
+import { FunctionInfo } from './functions/function-info.model';
 
-export { SUM, IF, AND, OR, POWER, ABS };
+export { SUM, IF, AND, OR, POWER, ABS, TRUNC, ROUND };
 
 export type Fn = 'SUM' | 'IF' | 'AND' | 'OR' | 'POWER' | 'ABS' | 'TRUNC' | 'ROUND';
 
-export function resolveFunction(fn: Fn, params: string) {
+const dynamicFunctionMap = new Map<string, FunctionInfo>();
+
+export function register(info: FunctionInfo) {
+
+    dynamicFunctionMap.set(
+        info.functionName,
+        info
+    );
+}
+
+export interface externalResolverModule {
+    loadFunction: (functionName: string, parameters: string)=>string;
+}
+
+let externalResolverModule: externalResolverModule;
+
+export function registerFunctionResolverModule(
+    externulMOdule: externalResolverModule): void    {
+        externalResolverModule = externulMOdule;
+}
+
+
+export function loadFunction(functionName: string, parameters: string) {
+    if (!dynamicFunctionMap.has(functionName)) {
+        if(externalResolverModule !== undefined){
+            return externalResolverModule.loadFunction(functionName, parameters);
+        }
+        throw Error("#NAME!");
+    }
+    const fnInfo = dynamicFunctionMap.get(functionName);
+    if(fnInfo!.passive){
+        return `#FuncId#${functionName}#Params${parameters}#`;
+    }
+    return fnInfo!.fn()(parameters, fnInfo!.source);
+}
+
+
+export function resolveFunction(fn: string, params: string) {
     switch (fn) {
         case 'SUM':
             return SUM(params);
@@ -30,7 +68,7 @@ export function resolveFunction(fn: Fn, params: string) {
         case 'ROUND':
             return ROUND(params);
         default:
-            throw Error('#NAME?');
+            return loadFunction(fn, params);
     }
 }
 

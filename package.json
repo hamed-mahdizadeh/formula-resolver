@@ -1,6 +1,6 @@
 {
   "name": "formula-resolver",
-  "version": "0.1.11",
+  "version": "0.2.0",
   "description": "",
   "main": "dist/formula-resolver.js",
   "types": "dist",
@@ -15,7 +15,7 @@
     "url": "https://github.com/hamed-mahdizadeh/formula-resolver.git"
   },
   "keywords": [],
-  "author": "",
+  "author": "Hamed Mahdizadeh <hamedmahdizadeh@gmail.com>",
   "license": "ISC",
   "devDependencies": {
     "@types/jasmine": "^3.6.2",

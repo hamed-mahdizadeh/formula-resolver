@@ -1,5 +1,6 @@
 import { Operator } from "./operator";
-import { Fn, resolveFunction } from "./functions";
+import { resolveFunction, register  } from "./functions";
+import { FunctionInfo } from "./functions/function-info.model";
 
 export class Resolver {
 
@@ -23,10 +24,10 @@ export class Resolver {
 
    
     private seperatorRegex = /(\(|\)|\,|[+\-*\/=]|<(?=[^=>])|(?<=[^<=])>|<>|>=|<=|[\^])/g;
-    private operatorsRegexAtomic = /^([+\-*\/=]|<(?=[^=>])|(?<=[^<=])>|<>|>=|<=|[\^])$/;
+    private operatorsRegexAtomic = /^([+\-*\/=]|<>|>=|<=|>|<|[\^])$/;
     private stringVariableRegex = /".*"/g;
     private functionNameRegex = /[a-zA-Z][a-zA-Z\d]*/;
-    private operatorsRegex = /(?<!\(|\)|\,|[+\-*\/=]|<(?=[^=>])|(?<=[^<=])>|<>|>=|<=|[\^])([+\-*\/=]|<(?=[^=>])|(?<=[^<=])>|<>|>=|<=|[\^])/g;
+    private operatorsRegex = /(?<!\(|\)|\,|[+\-*\/=]|<(?=[^=])|>(?=[^=])|<>|>=|<=|[\^])([+\-*\/=]|<(?=[^=>])|(?<=[^<=])>|<>|>=|<=|[\^])/g;
     private operatorPriorities: Map<string, number> = new Map();
 
     private setFunctionResult(
@@ -39,11 +40,15 @@ export class Resolver {
         if (!this.functionNameRegex.test(expression[fnPointer])) {
             result = params;
         } else {
-            result = resolveFunction(expression[fnPointer] as Fn, params);
+            result = this.resolveFunction(expression[fnPointer], params);
         }
         let removeLength = pointer - start + 1;
         expression.splice(start, removeLength, result).length;
         return pointer - start - 1;
+    }
+
+    resolveFunction(fn: string, params: string){
+        return resolveFunction(fn, params);
     }
 
     private normalizeOperand(operand: string) {
@@ -159,7 +164,7 @@ export class Resolver {
                 itemList);
             itemList[v.index] = res;
         });
-        let result = itemList.join('').replace(' ', '');
+        let result = itemList.filter(c=> c.trim() !== '').join('');
         return result;
     }
 
@@ -189,5 +194,23 @@ export class Resolver {
             return this.calculateParams(expressionParts, 0, expressionParts.length);
         }
         return resolve(start);
+    }
+
+
+    /**
+     * Params resolver
+     * @param functionInfo  
+     * object includes: 
+     * fn: custom function
+     * functionName: name of the function
+     * context: optional context (thisArg) which will be bound to custom function
+     * passive: If set to true function only would resolved if parent methods already had bean resolved
+     * This function prevents internal functions of methods like IF from being executed before the condition is applied.
+     * Passive functions could not set nested inside of each others.
+     * source: data or any object which you want have access to it in your custom function   
+     * @returns  
+     */
+    register(functionInfo: FunctionInfo){
+        return register(functionInfo);
     }
 }

@@ -1,2 +1,3 @@
 import {Resolver} from './resolver';
-export { Resolver};
+import { FunctionInfo } from './functions/function-info.model';
+export { Resolver, FunctionInfo};
