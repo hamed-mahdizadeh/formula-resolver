@@ -1,8 +1,11 @@
 import { Operator } from "./operator";
-import { resolveFunction, register } from "./functions";
-import { CustomFunctionInfo } from "./functions/custom-function-info.model";
+import { resolveFunction } from "./functions";
+import { FunctionInfo } from "./function-info.model";
+import { CustomResolver, register, resolveDynamicFunction } from "./dynamic-function";
 
-export class Resolver {
+
+
+export class DynamicResolver {
 
     constructor() {
         this.setOperatorPriorities();
@@ -28,7 +31,12 @@ export class Resolver {
     private stringVariableRegex = /".*"/g;
     private functionNameRegex = /[a-zA-Z][a-zA-Z\d]*/;
     private operatorsRegex = /(?<!\(|\)|\,|[+\-*\/=]|<(?=[^=])|>(?=[^=])|<>|>=|<=|[\^])([+\-*\/=]|<(?=[^=>])|(?<=[^<=])>|<>|>=|<=|[\^])/g;
+    private fnPlaceHolder = /{{\d+}}/;
+    private fnKey = /(?<={{)\d+(?=}})/;
     private operatorPriorities: Map<string, number> = new Map();
+
+
+    public fnMap: Map<number, FunctionInfo> = new Map();
 
     private setFunctionResult(
         params: string,
@@ -138,12 +146,9 @@ export class Resolver {
         itemList.fill('', operand1Index > 0 ? operand1Index : 0, operand2Index + 1);
     }
 
-    private calculate(expression: string) {
-        const itemList = expression
-            .split(this.operatorsRegex)
-            .filter(c => c.trim() !== '');
+    private calculate(itemList: string[]) {
         const operators: { operator: string, index: number }[] = []
-        itemList.filter(c => c.trim() !== '').forEach((v, i) => {
+        itemList.forEach((v, i) => {
             if (this.operatorsRegexAtomic.test(v)) {
                 operators.push({ operator: v, index: i });
             }
@@ -169,10 +174,27 @@ export class Resolver {
         return result;
     }
 
-    private calculateParams(expressionParts: string[], start: number, end: number): string {
-        const paramsList = expressionParts.slice(start, end).join('').split(',');
-        const result = paramsList.map(p => this.calculate(p)).join(',');
-        return result;
+    resolvePreProcessedItem(fn: FunctionInfo): string {
+        if (fn.fnName !== '') {
+            return resolveDynamicFunction(this, fn);
+        }
+        if (fn.params.length !== 1) {
+            throw Error('Invalid Format! ' + fn.params.join(','));
+        }
+        return this.calculate(fn.params[0]);
+    }
+
+    resolveItemAsFn(item: string) {
+        if (this.fnPlaceHolder.test(item)) {
+            const fn = this.fnMap.get(+(this.fnKey.exec(item)![0]))!;
+            return this.resolvePreProcessedItem(fn);
+        }
+        return item;
+    }
+
+    resolvePreProcessedParameter(paramItem: string[]) {
+        let preProcessedparamItem = paramItem.map(item => this.resolveItemAsFn(item));
+        return this.calculate(preProcessedparamItem);
     }
 
     resolve(expression: string, start: number = -1): {result: string} {
@@ -180,39 +202,46 @@ export class Resolver {
             .split(this.seperatorRegex)
             .map(i => i.trim())
             .filter(i => i !== '');
-        let pointer = start;
-        const resolve = (start: number) => {
-            while (pointer < expressionParts.length) {
-                pointer++;
-                if (expressionParts[pointer] === '(') {
-                    resolve(pointer);
-                } else if (expressionParts[pointer] === ')') {
-                    let params = this.calculateParams(expressionParts, start + 1, pointer);
-                    pointer = this.setFunctionResult(params, expressionParts, start - 1, pointer);
-                    return { result : ''};
-                }
+        const stack: number[] = [];
+        const index: number[][] = [];
+        let methodCount = 0;
+        for (let i = 0; i < expressionParts.length; i++) {
+            if (expressionParts[i] === '(') {
+                stack.push(i);
+            } else if (expressionParts[i] === ')') {
+                index.push([stack.pop()!, i]);
             }
-            const result = this.calculateParams(expressionParts, 0, expressionParts.length);
-            return { result };
         }
-        return resolve(start);
+        index.sort((a, b) => (a[1] - a[0]) - (b[1] - b[0]));
+        for (let i = 0; i < index.length; i++) {
+            let begin = index[i][0];
+            if (begin > 0) {
+                const params = expressionParts.slice(index[i][0] + 1, index[i][1]).filter(c => c !== '');
+                let fnName = '';
+                if (this.functionNameRegex.test(expressionParts[begin - 1])) {
+                    fnName = expressionParts[begin - 1];
+                }
+                const subExpression = expressionParts.slice(index[i][0], index[i][1] + 1).filter(c => c !== '');
+                this.fnMap.set(methodCount, new FunctionInfo(subExpression, fnName, params));
+                index[i][0] = begin - 1;
+            }
+            expressionParts.fill('', index[i][0], index[i][1] + 1);
+            expressionParts[index[i][0]] = `{{${methodCount++}}}`;
+
+        }
+        const processedExpressionParts = expressionParts.filter(c => c !== '');
+        for (let i = 0; i < processedExpressionParts.length; i++) {
+            let item = processedExpressionParts[i];
+            if (this.fnPlaceHolder.test(item)) {
+                const fn = this.fnMap.get(+(this.fnKey.exec(item)![0]))!;
+                processedExpressionParts[i] = this.resolvePreProcessedItem(fn);
+            }
+        }
+        const result = this.calculate(processedExpressionParts);
+        return { result };
     }
 
-
-    /**
-     * Params resolver
-     * @param functionInfo  
-     * object includes: 
-     * fn: custom function
-     * functionName: name of the function
-     * context: optional context (thisArg) which will be bound to custom function
-     * passive: If set to true function only would resolved if parent methods already had bean resolved
-     * This function prevents internal functions of methods like IF from being executed before the condition is applied.
-     * Passive functions could not set nested inside of each others.
-     * source: data or any object which you want have access to it in your custom function   
-     * @returns  
-     */
-    register(functionInfo: CustomFunctionInfo) {
-        return register(functionInfo);
+    register(customResolver: CustomResolver) {
+        return register(customResolver);
     }
 }

@@ -6,15 +6,15 @@ import { POWER } from './functions/power';
 import { ABS } from './functions/abs';
 import { TRUNC } from './functions/trunc'
 import { ROUND } from './functions/round';
-import { FunctionInfo } from './functions/function-info.model';
+import { CustomFunctionInfo } from './functions/custom-function-info.model';
 
 export { SUM, IF, AND, OR, POWER, ABS, TRUNC, ROUND };
 
 export type Fn = 'SUM' | 'IF' | 'AND' | 'OR' | 'POWER' | 'ABS' | 'TRUNC' | 'ROUND';
 
-const dynamicFunctionMap = new Map<string, FunctionInfo>();
+const dynamicFunctionMap = new Map<string, CustomFunctionInfo>();
 
-export function register(info: FunctionInfo) {
+export function register(info: CustomFunctionInfo) {
 
     dynamicFunctionMap.set(
         info.functionName,
@@ -42,9 +42,6 @@ export function loadFunction(functionName: string, parameters: string) {
         throw Error("#NAME!");
     }
     const fnInfo = dynamicFunctionMap.get(functionName);
-    if(fnInfo!.passive){
-        return `#FuncId#${functionName}#Params${parameters}#`;
-    }
     return fnInfo!.fn()(parameters, fnInfo!.source);
 }
 

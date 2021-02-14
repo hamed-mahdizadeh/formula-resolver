@@ -1,4 +1,4 @@
-export class FunctionInfo {
+export class CustomFunctionInfo {
 
     constructor(
         fn: (paramers: string, source?: any) => string,
