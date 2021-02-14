@@ -1,16 +1,9 @@
-// var numeric = require('numeric');
-// var utils = require('./utils');
-// var error = require('./error');
-// var statistical = require('./statistical');
-// var information = require('./information');
 
-import { isIdentifierOrPrivateIdentifier, parseJsonConfigFileContent } from 'typescript';
 import * as errors from '../../errors';
 
 function checkIsInvalid(...params: any[]) {
     return params.some(p=> p === undefined || isNaN(p));
 }
-
 
 export function ABS(param: string) {
     let numberParam = +param;
@@ -123,7 +116,6 @@ export function CSCH(params: string) {
     }
     return 2 / (Math.exp(numberParam) - Math.exp(-numberParam));
 }
-
 
 export function DECIMAL(params: string) {
     if (params === undefined) {
@@ -314,8 +306,6 @@ export function SUM(params: string) {
     return _sum(...parameters);
 }
 
-
-
 export function ATAN2 (params: string) {
     const [number_x, number_y] = params.split(',').map(c=> +c.trim());
     if (checkIsInvalid(number_x, number_y)) {
@@ -403,10 +393,6 @@ export function CEILING(params:string) {
     }
 }
 
-exports.CEILING.MATH = exports.CEILING;
-
-exports.CEILING.PRECISE = exports.CEILING;
-
 const _FACT = (function () {
     const MEMOIZED_FACT: number[] = [];
     return (num:number)=>{
@@ -447,10 +433,6 @@ export function COMBINA (params: string) {
     return (number === 0 && number_chosen === 0) ? 1 : exports.COMBIN(number + number_chosen - 1, number - 1);
 };
 
-
-exports.EXP = Math.exp;
-
-
 export function FLOOR(params:string) {
     let [number, significance, mode] = params.split(',').map(c=> +c.trim());
     mode = (mode === undefined) ? 0 : mode;
@@ -471,8 +453,6 @@ export function FLOOR(params:string) {
         }
     }
 }
-
-
 
 // adapted http://rosettacode.org/wiki/Greatest_common_divisor#JavaScript
 export function GCD (params: string) {
@@ -497,7 +477,6 @@ export function GCD (params: string) {
     }
     return x;
 };
-
 
 export function EQ (params: string) {
     let paramsArray = params.split(',').map(c=>c.trim());
@@ -571,9 +550,6 @@ export function MULTINOMIAL(params: string) {
     }
     return exports.FACT(sum) / divisor;
 };
-
-
-
 
 export function PRODUCT (params: string) {
     var args = params.split(',').map(c=>+c.trim());
@@ -723,400 +699,3 @@ export function LTE  (param: string) {
     }
     return num1 <= num2;
 };
-
-
-
-
-/*exports.SUMIF = function (range, criteria) {
-    range = utils.parseNumberArray(utils.flatten(range));
-    if (range instanceof Error) {
-        return range;
-    }
-    var result = 0;
-    for (var i = 0; i < range.length; i++) {
-        result += (eval(range[i] + criteria)) ? range[i] : 0; // jshint ignore:line
-    }
-    return result;
-};
-
-exports.SUMIFS = function () {
-    var args = utils.argsToArray(arguments);
-    var range = utils.parseNumberArray(utils.flatten(args.shift()));
-    if (range instanceof Error) {
-        return range;
-    }
-    var criteria = args;
-
-    var n_range_elements = range.length;
-    var n_criterias = criteria.length;
-
-    var result = 0;
-    for (var i = 0; i < n_range_elements; i++) {
-        var el = range[i];
-        var condition = '';
-        for (var c = 0; c < n_criterias; c++) {
-            condition += el + criteria[c];
-            if (c !== n_criterias - 1) {
-                condition += '&&';
-            }
-        }
-        if (eval(condition)) { // jshint ignore:line
-            result += el;
-        }
-    }
-    return result;
-};
-
-exports.SUMPRODUCT = function () {
-    if (!arguments || arguments.length === 0) {
-        return error.value;
-    }
-    var arrays = arguments.length + 1;
-    var result = 0;
-    var product;
-    var k;
-    var _i;
-    var _ij;
-    for (var i = 0; i < arguments[0].length; i++) {
-        if (!(arguments[0][i] instanceof Array)) {
-            product = 1;
-            for (k = 1; k < arrays; k++) {
-                _i = utils.parseNumber(arguments[k - 1][i]);
-                if (_i instanceof Error) {
-                    return _i;
-                }
-                product *= _i;
-            }
-            result += product;
-        } else {
-            for (var j = 0; j < arguments[0][i].length; j++) {
-                product = 1;
-                for (k = 1; k < arrays; k++) {
-                    _ij = utils.parseNumber(arguments[k - 1][i][j]);
-                    if (_ij instanceof Error) {
-                        return _ij;
-                    }
-                    product *= _ij;
-                }
-                result += product;
-            }
-        }
-    }
-    return result;
-};
-
-exports.SUMSQ = function () {
-    var numbers = utils.parseNumberArray(utils.flatten(arguments));
-    if (numbers instanceof Error) {
-        return numbers;
-    }
-    var result = 0;
-    var length = numbers.length;
-    for (var i = 0; i < length; i++) {
-        result += (information.ISNUMBER(numbers[i])) ? numbers[i] * numbers[i] : 0;
-    }
-    return result;
-};
-
-exports.SUMX2MY2 = function (array_x, array_y) {
-    array_x = utils.parseNumberArray(utils.flatten(array_x));
-    array_y = utils.parseNumberArray(utils.flatten(array_y));
-    if (utils.anyIsError(array_x, array_y)) {
-        return error.value;
-    }
-    var result = 0;
-    for (var i = 0; i < array_x.length; i++) {
-        result += array_x[i] * array_x[i] - array_y[i] * array_y[i];
-    }
-    return result;
-};
-
-exports.SUMX2PY2 = function (array_x, array_y) {
-    array_x = utils.parseNumberArray(utils.flatten(array_x));
-    array_y = utils.parseNumberArray(utils.flatten(array_y));
-    if (utils.anyIsError(array_x, array_y)) {
-        return error.value;
-    }
-    var result = 0;
-    array_x = utils.parseNumberArray(utils.flatten(array_x));
-    array_y = utils.parseNumberArray(utils.flatten(array_y));
-    for (var i = 0; i < array_x.length; i++) {
-        result += array_x[i] * array_x[i] + array_y[i] * array_y[i];
-    }
-    return result;
-};
-
-exports.SUMXMY2 = function (array_x, array_y) {
-    array_x = utils.parseNumberArray(utils.flatten(array_x));
-    array_y = utils.parseNumberArray(utils.flatten(array_y));
-    if (utils.anyIsError(array_x, array_y)) {
-        return error.value;
-    }
-    var result = 0;
-    array_x = utils.flatten(array_x);
-    array_y = utils.flatten(array_y);
-    for (var i = 0; i < array_x.length; i++) {
-        result += Math.pow(array_x[i] - array_y[i], 2);
-    }
-    return result;
-};
-
-
-
-
-//TODO: use options
-exports.AGGREGATE = function (function_num, options, ref1, ref2) {
-    function_num = utils.parseNumber(function_num);
-    options = utils.parseNumber(function_num);
-    if (utils.anyIsError(function_num, options)) {
-        return error.value;
-    }
-    switch (function_num) {
-        case 1:
-            return statistical.AVERAGE(ref1);
-        case 2:
-            return statistical.COUNT(ref1);
-        case 3:
-            return statistical.COUNTA(ref1);
-        case 4:
-            return statistical.MAX(ref1);
-        case 5:
-            return statistical.MIN(ref1);
-        case 6:
-            return exports.PRODUCT(ref1);
-        case 7:
-            return statistical.STDEV.S(ref1);
-        case 8:
-            return statistical.STDEV.P(ref1);
-        case 9:
-            return exports.SUM(ref1);
-        case 10:
-            return statistical.VAR.S(ref1);
-        case 11:
-            return statistical.VAR.P(ref1);
-        case 12:
-            return statistical.MEDIAN(ref1);
-        case 13:
-            return statistical.MODE.SNGL(ref1);
-        case 14:
-            return statistical.LARGE(ref1, ref2);
-        case 15:
-            return statistical.SMALL(ref1, ref2);
-        case 16:
-            return statistical.PERCENTILE.INC(ref1, ref2);
-        case 17:
-            return statistical.QUARTILE.INC(ref1, ref2);
-        case 18:
-            return statistical.PERCENTILE.EXC(ref1, ref2);
-        case 19:
-            return statistical.QUARTILE.EXC(ref1, ref2);
-    }
-};
-
-exports.ARABIC = function (text) {
-    // Credits: Rafa? Kukawski
-    if (!/^M*(?:D?C{0,3}|C[MD])(?:L?X{0,3}|X[CL])(?:V?I{0,3}|I[XV])$/.test(text)) {
-        return error.value;
-    }
-    var r = 0;
-    text.replace(/[MDLV]|C[MD]?|X[CL]?|I[XV]?/g, function (i) {
-        r += {
-            M: 1000,
-            CM: 900,
-            D: 500,
-            CD: 400,
-            C: 100,
-            XC: 90,
-            L: 50,
-            XL: 40,
-            X: 10,
-            IX: 9,
-            V: 5,
-            IV: 4,
-            I: 1
-        }[i];
-    });
-    return r;
-};
-
-exports.SUBTOTAL = function (function_code, ref1) {
-    function_code = utils.parseNumber(function_code);
-    if (function_code instanceof Error) {
-        return function_code;
-    }
-    switch (function_code) {
-        case 1:
-            return statistical.AVERAGE(ref1);
-        case 2:
-            return statistical.COUNT(ref1);
-        case 3:
-            return statistical.COUNTA(ref1);
-        case 4:
-            return statistical.MAX(ref1);
-        case 5:
-            return statistical.MIN(ref1);
-        case 6:
-            return exports.PRODUCT(ref1);
-        case 7:
-            return statistical.STDEV.S(ref1);
-        case 8:
-            return statistical.STDEV.P(ref1);
-        case 9:
-            return exports.SUM(ref1);
-        case 10:
-            return statistical.VAR.S(ref1);
-        case 11:
-            return statistical.VAR.P(ref1);
-        // no hidden values for us
-        case 101:
-            return statistical.AVERAGE(ref1);
-        case 102:
-            return statistical.COUNT(ref1);
-        case 103:
-            return statistical.COUNTA(ref1);
-        case 104:
-            return statistical.MAX(ref1);
-        case 105:
-            return statistical.MIN(ref1);
-        case 106:
-            return exports.PRODUCT(ref1);
-        case 107:
-            return statistical.STDEV.S(ref1);
-        case 108:
-            return statistical.STDEV.P(ref1);
-        case 109:
-            return exports.SUM(ref1);
-        case 110:
-            return statistical.VAR.S(ref1);
-        case 111:
-            return statistical.VAR.P(ref1);
-
-    }
-};*/
-
-
-// exports.POWER = function (number, power) {
-//     number = utils.parseNumber(number);
-//     power = utils.parseNumber(power);
-//     if (utils.anyIsError(number, power)) {
-//         return error.value;
-//     }
-//     var result = Math.pow(number, power);
-//     if (isNaN(result)) {
-//         return error.num;
-//     }
-
-//     return result;
-// };
-
-
-// exports.SUM = function () {
-//     var result = 0;
-//     var argsKeys = Object.keys(arguments);
-//     for (var i = 0; i < argsKeys.length; ++i) {
-//         var elt = arguments[argsKeys[i]];
-//         if (typeof elt === 'number') {
-//             result += elt;
-//         } else if (typeof elt === 'string') {
-//             var parsed = parseFloat(elt);
-//             !isNaN(parsed) && (result += parsed);
-//         } else if (Array.isArray(elt)) {
-//             result += exports.SUM.apply(null, elt);
-//         }
-//     }
-//     return result;
-// };
-
-// exports.POW = function (base, exponent) {
-//     if (arguments.length !== 2) {
-//         return error.na;
-//     }
-
-//     base = utils.parseNumber(base);
-//     exponent = utils.parseNumber(exponent);
-//     if (utils.anyIsError(base, exponent)) {
-//         return error.error;
-//     }
-
-//     return exports.POWER(base, exponent);
-// };
-
-exports.FLOOR.MATH = exports.FLOOR;
-
-// Deprecated
-exports.FLOOR.PRECISE = exports.FLOOR.MATH;
-
-
-/*
-exports.MINVERSE = function (matrix) {
-    matrix = utils.parseMatrix(matrix);
-    if (matrix instanceof Error) {
-        return matrix;
-    }
-    return numeric.inv(matrix);
-};
-
-exports.MMULT = function (matrix1, matrix2) {
-    matrix1 = utils.parseMatrix(matrix1);
-    matrix2 = utils.parseMatrix(matrix2);
-    if (utils.anyIsError(matrix1, matrix2)) {
-        return error.value;
-    }
-    return numeric.dot(matrix1, matrix2);
-};
-
-exports.MDETERM = function (matrix) {
-    matrix = utils.parseMatrix(matrix);
-    if (matrix instanceof Error) {
-        return matrix;
-    }
-    return numeric.det(matrix);
-};
-//TODO: verify
-exports.ISO = {
-    CEILING: exports.CEILING
-};
-export function MUNIT(params: string) {
-    const dimension = +params;
-    if (checkIsInvalid(dimension)) {
-        return dimension;
-    }
-    return numeric.identity(dimension);
-};
-// TODO
-exports.ROMAN = function (number) {
-    number = utils.parseNumber(number);
-    if (number instanceof Error) {
-        return number;
-    }
-    // The MIT License
-    // Copyright (c) 2008 Steven Levithan
-    var digits = String(number).split('');
-    var key = ['', 'C', 'CC', 'CCC', 'CD', 'D', 'DC', 'DCC', 'DCCC', 'CM', '', 'X', 'XX', 'XXX', 'XL', 'L', 'LX', 'LXX', 'LXXX', 'XC', '', 'I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX'];
-    var roman = '';
-    var i = 3;
-    while (i--) {
-        roman = (key[+digits.pop() + (i * 10)] || '') + roman;
-    }
-    return new Array(+digits.join('') + 1).join('M') + roman;
-};
-
-
-
-
-exports.SERIESSUM = function (x, n, m, coefficients) {
-    x = utils.parseNumber(x);
-    n = utils.parseNumber(n);
-    m = utils.parseNumber(m);
-    coefficients = utils.parseNumberArray(coefficients);
-    if (utils.anyIsError(x, n, m, coefficients)) {
-        return error.value;
-    }
-    var result = coefficients[0] * Math.pow(x, n);
-    for (var i = 1; i < coefficients.length; i++) {
-        result += coefficients[i] * Math.pow(x, n + i * m);
-    }
-    return result;
-};
-
-*/
