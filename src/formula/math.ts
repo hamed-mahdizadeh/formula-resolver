@@ -1,5 +1,5 @@
 
-import * as errors from '../../errors';
+import * as errors from '../errors';
 
 function checkIsInvalid(...params: any[]) {
     return params.some(p=> p === undefined || isNaN(p));

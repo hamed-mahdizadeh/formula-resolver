@@ -1,10 +1,7 @@
 import { DynamicResolver } from "../dynamic-resolver";
 import { FunctionInfo } from "../function-info.model";
+import { convertToboolean } from "./util";
 
-
-function convertToboolean(params:any) {
-    return true;
-}
 
 export function IF(this: DynamicResolver, params:FunctionInfo) {
     let res = this.resolvePreProcessedParameter(params.params[0]);

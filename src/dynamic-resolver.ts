@@ -170,7 +170,7 @@ export class DynamicResolver {
                 itemList);
             itemList[v.index] = res;
         });
-        let result = itemList.filter(c => c.trim() !== '').join('');
+        let result = itemList.filter(c => c + ''.trim() !== '').join('');
         return result;
     }
 

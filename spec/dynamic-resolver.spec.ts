@@ -46,9 +46,7 @@ describe('Calculate Excel-Like Filled Formula', () => {
 
     it('Expression 50 + IF(true=true,ABS(-1000000),ABS(1000/0)) Should have Result 1000050 DynamicResolver.resolve', () => {
         const expression = '50 + IF(true=true,ABS(-1000000),ABS(1000/0))';
-        
+         
         expect(resolver.resolve(expression).result).toBe('1000050');
     });
-    
-    
 });

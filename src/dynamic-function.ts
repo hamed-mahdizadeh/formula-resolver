@@ -1,7 +1,9 @@
 import { IF } from "./dynamic-functions/dynamic-if";
 import { DynamicResolver } from "./dynamic-resolver";
 import { FunctionInfo } from "./function-info.model";
-import { ABS, POWER, ROUND, TRUNC } from "./functions";
+import { getMathFn } from "./functions";
+import * as mathFn from './formula/math';
+type SupportedMathFunction = keyof typeof mathFn;
 
 export interface CustomResolver {
     resolveFunction(functionContext: DynamicResolver,fn: FunctionInfo): any;
@@ -27,15 +29,20 @@ export function resolveDynamicFunction(functionContext: DynamicResolver,fn: Func
         //     return AND(fn);
         // case 'OR':
         //     return OR(fn);
-        case 'POWER':
-             return POWER(toSimpleParam.bind(functionContext)(fn.params));
-        case 'ABS':
-             return ABS(toSimpleParam.bind(functionContext)(fn.params));
-        case 'TRUNC':
-            return TRUNC(toSimpleParam.bind(functionContext)(fn.params));
-        case 'ROUND':
-             return ROUND(toSimpleParam.bind(functionContext)(fn.params));
+        // case 'POWER':
+        //      return POWER(toSimpleParam.bind(functionContext)(fn.params));
+        // case 'ABS':
+        //      return ABS(toSimpleParam.bind(functionContext)(fn.params));
+        // case 'TRUNC':
+        //     return TRUNC(toSimpleParam.bind(functionContext)(fn.params));
+        // case 'ROUND':
+        //      return ROUND(toSimpleParam.bind(functionContext)(fn.params));
         default:
-            return customResolver.resolveFunction(functionContext,fn);
+            const method = getMathFn(fn.fnName);
+            if(method !== undefined) {
+                return method(toSimpleParam.bind(functionContext)(fn.params));
+            } else {
+                return customResolver.resolveFunction(functionContext,fn);
+            } 
     }
 }
