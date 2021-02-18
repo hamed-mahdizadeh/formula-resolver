@@ -62,8 +62,8 @@ describe('Calculate Excel-Like Filled Formula', () => {
     }
     it('Should print the text in console and returned it by the custom method.', () => {
         registerPrintFunction();
-        const expression = 'PRINT("hello world!")';
-        expect(resolver.resolve(expression).result).toBe('"hello world!"');
+        const expression = 'PRINT("Test Text!")';
+        expect(resolver.resolve(expression).result).toBe('"Test Text!"');
     });
     it('Should print and return "Passed!"', () => {
         registerPrintFunction();
