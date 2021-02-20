@@ -74,16 +74,6 @@ export function resolveFunction(fn: string, params: string) {
             return AND(params);
         case 'OR':
             return OR(params);
-        // case 'POWER':
-        //     return POWER(params);
-        // case 'ABS':
-        //     return ABS(params);
-        // case 'TRUNC':
-        //     return TRUNC(params);
-        // case 'ROUND':
-        //     return ROUND(params);
-        // case 'SUM':
-        //     return SUM(params);
         default:
             const method = getMathFn(fn);
             if (method !== undefined) {

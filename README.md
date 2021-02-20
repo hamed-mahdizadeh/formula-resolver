@@ -95,6 +95,8 @@ The resolve method of this class has more complex algorithm than normal resolver
     resolver.register(new TestResolver());
     resolver.resolve(expression).result
 
+### Version 0.7.1 changes:
+Optional **extraParams** parameter with type **any** has been added to **DynamicResolver** **resolve** method and it would be passed to your custom methods.
 ### Version 0.7.0 changes:
 * Parenthesis bug in formula has been fixed.
 * String result of the function now has been moved to an object for preventing future breaking change when extra fields like debugging info would be added to the result.

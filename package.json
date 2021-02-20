@@ -1,6 +1,6 @@
 {
   "name": "formula-resolver",
-  "version": "0.3.0",
+  "version": "0.7.1",
   "description": "",
   "main": "dist/formula-resolver.js",
   "types": "dist",

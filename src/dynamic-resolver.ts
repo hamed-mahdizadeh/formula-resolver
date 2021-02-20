@@ -174,9 +174,9 @@ export class DynamicResolver {
         return result;
     }
 
-    resolvePreProcessedItem(fn: FunctionInfo): string {
+    resolvePreProcessedItem(fn: FunctionInfo, extraParams?: any): string {
         if (fn.fnName !== '') {
-            return resolveDynamicFunction(this, fn);
+            return resolveDynamicFunction(this, fn, extraParams);
         }
         if (fn.params.length !== 1) {
             throw Error('Invalid Format! ' + fn.params.join(','));
@@ -184,20 +184,20 @@ export class DynamicResolver {
         return this.calculate(fn.params[0]);
     }
 
-    resolveItemAsFn(item: string) {
+    resolveItemAsFn(item: string, extraParams?: any) {
         if (this.fnPlaceHolder.test(item)) {
             const fn = this.fnMap.get(+(this.fnKey.exec(item)![0]))!;
-            return this.resolvePreProcessedItem(fn);
+            return this.resolvePreProcessedItem(fn, extraParams);
         }
         return item;
     }
 
-    resolvePreProcessedParameter(paramItem: string[]) {
-        let preProcessedparamItem = paramItem.map(item => this.resolveItemAsFn(item));
+    resolvePreProcessedParameter(paramItem: string[], extraParams?: any) {
+        let preProcessedparamItem = paramItem.map(item => this.resolveItemAsFn(item, extraParams));
         return this.calculate(preProcessedparamItem);
     }
 
-    resolve(expression: string, start: number = -1): {result: string} {
+    resolve(expression: string, extraParams?: any): {result: string} {
         const expressionParts = expression
             .split(this.seperatorRegex)
             .map(i => i.trim())
@@ -234,7 +234,7 @@ export class DynamicResolver {
             let item = processedExpressionParts[i];
             if (this.fnPlaceHolder.test(item)) {
                 const fn = this.fnMap.get(+(this.fnKey.exec(item)![0]))!;
-                processedExpressionParts[i] = this.resolvePreProcessedItem(fn);
+                processedExpressionParts[i] = this.resolvePreProcessedItem(fn, extraParams);
             }
         }
         const result = this.calculate(processedExpressionParts);
