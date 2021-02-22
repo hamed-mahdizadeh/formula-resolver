@@ -11,7 +11,7 @@ export function ABS(param: string) {
         return param;
     }
     return Math.abs(numberParam);
-};
+}
 
 export function ACOS(params: string) {
     let numberParam = +params;
@@ -27,7 +27,7 @@ export function ACOSH (params: string) {
         return params;
     }
     return Math.log(numberParam + Math.sqrt(numberParam * numberParam - 1));
-};
+}
 
 export function ACOT (params: string) {
     let numberParam = +params;
@@ -35,7 +35,7 @@ export function ACOT (params: string) {
         return params;
     }
     return Math.atan(1 / numberParam);
-};
+}
 
 export function ACOTH (params: string) {
     let numberParam = +params;
@@ -43,7 +43,7 @@ export function ACOTH (params: string) {
         return params;
     }
     return 0.5 * Math.log((numberParam + 1) / (numberParam - 1));
-};
+}
 
 export function ASIN (params: string) {
     let numberParam = +params;
@@ -51,7 +51,7 @@ export function ASIN (params: string) {
         return params;
     }
     return Math.asin(numberParam);
-};
+}
 
 export function ASINH (params: string) {
     let numberParam = +params;
@@ -59,7 +59,7 @@ export function ASINH (params: string) {
         return params;
     }
     return Math.log(numberParam + Math.sqrt(numberParam * numberParam + 1));
-};
+}
 
 export function ATAN (params: string) {
     let numberParam = +params;
@@ -67,7 +67,7 @@ export function ATAN (params: string) {
         return params;
     }
     return Math.atan(numberParam);
-};
+}
 
 export function COS(params: string) {
     let numberParam = +params;
@@ -75,7 +75,8 @@ export function COS(params: string) {
         return params;
     }
     return Math.cos(numberParam);
-};
+}
+
 export function COSH(params: string) {
     let numberParam = +params;
     if (isNaN(numberParam)) {
@@ -119,14 +120,14 @@ export function CSCH(params: string) {
 
 export function DECIMAL(params: string) {
     if (params === undefined) {
-        return errors.VALUE;
+        throw Error(errors.VALUE);
     }
     let [number, radix] = params.split(',').map(c=> c.trim());
     if (number === undefined || radix === undefined) {
-        return errors.VALUE;
+        throw Error(errors.VALUE);
     }
     return parseInt(number, +radix);
-};
+}
 
 export function DEGREES(params: string) {
     let numberParam = +params;
@@ -141,7 +142,7 @@ export function EVEN(params: string) {
     if (isNaN(numberParam)) {
         return params;
     }
-    return exports.CEILING(numberParam, -2, -1);
+    return _CEILING(numberParam, -2, -1);
 }
 
 export function ATANH(params: string) {
@@ -150,6 +151,15 @@ export function ATANH(params: string) {
         return params;
     }
     return Math.log((1 + numberParam) / (1 - numberParam)) / 2;
+}
+
+function _FACTDOUBLE(numberParam: number): number {
+    var n = Math.floor(numberParam);
+    if (n <= 0) {
+        return 1;
+    } else {
+        return n * _FACTDOUBLE(n - 2);
+    }
 }
 
 export function FACTDOUBLE(params: string) {
@@ -161,7 +171,7 @@ export function FACTDOUBLE(params: string) {
     if (n <= 0) {
         return 1;
     } else {
-        return n * exports.FACTDOUBLE(n - 2);
+        return n * _FACTDOUBLE(n - 2);
     }
 }
 
@@ -276,7 +286,12 @@ export function TANH(params: string) {
 export function LOG (params: string) {
     const [strNum, strBase] = params.split(',').map(c=> c.trim())
     const num = +strNum;
-    const logBase = +(strBase ?? 10);
+    let logBase;
+    if(!isNaN(+strBase)){
+        logBase = +strBase;
+    } else {
+        logBase = 10;
+    }
 
     if (!num || !logBase || isNaN(logBase) || isNaN(num)) {
         throw Error(errors.NUM);
@@ -287,7 +302,7 @@ export function LOG (params: string) {
     } 
 
     return Math.log(num) / Math.log(logBase);
-};
+}
 
 export function LOG10(params: string) {
     let numberParam = +params;
@@ -312,7 +327,7 @@ export function ATAN2 (params: string) {
         throw Error(errors.VALUE);
     }
     return Math.atan2(number_x, number_y);
-};
+}
 
 export function TRUNC(params:string) {
     const [strNumber, strDigits] = params.split(',').map(c=>c.trim());
@@ -323,7 +338,7 @@ export function TRUNC(params:string) {
     }
     var sign = (number > 0) ? 1 : -1;
     return sign * (Math.floor(Math.abs(number) * Math.pow(10, digits))) / Math.pow(10, digits);
-};
+}
 
 export function LCM(param:string) {
     const params = param.split(',').map(c=> +c.trim());
@@ -370,8 +385,7 @@ export function BASE(params:string) {
     return new Array(Math.max(min_length + 1 - result.length, 0)).join('0') + result;
 }
 
-export function CEILING(params:string) {
-    let [number, significance, mode] = params.split(',').map(c=> +c.trim());
+function  _CEILING(number: number, significance: number, mode: number) {
     significance = (significance === undefined) ? 1 : significance;
     mode = (mode === undefined) ? 0 : mode;
     if(checkIsInvalid(number, significance, mode)){
@@ -393,6 +407,11 @@ export function CEILING(params:string) {
     }
 }
 
+export function CEILING(params:string) {
+    let [number, significance, mode] = params.split(',').map(c=> +c.trim());
+    return _CEILING(number, significance, mode);
+}
+
 const _FACT = (function () {
     const MEMOIZED_FACT: number[] = [];
     return (num:number)=>{
@@ -402,7 +421,7 @@ const _FACT = (function () {
          } else if (MEMOIZED_FACT[n] > 0) {
             return MEMOIZED_FACT[n];
         } else {
-            MEMOIZED_FACT[n] = exports.FACT(n - 1) * n;
+            MEMOIZED_FACT[n] = _FACT(n - 1) * n;
             return MEMOIZED_FACT[n];
         }
     };
@@ -412,17 +431,21 @@ const _FACT = (function () {
 export function FACT(params:string) {
     let number = +params;
     if(checkIsInvalid(number)){
-        return errors.VALUE;
+        throw Error(errors.VALUE);
     }
     return _FACT(number);
 }
 
-export function COMBIN(params:string) {
-    const [number, number_chosen] = params.split(',').map(c=> +c.trim());
+function _COMBIN(number: number, number_chosen: number){
     if(checkIsInvalid(number, number_chosen)) {
         throw Error(errors.VALUE);
     }
     return _FACT(number) / (_FACT(number_chosen) * _FACT(number - number_chosen));
+}
+
+export function COMBIN(params:string) {
+    const [number, number_chosen] = params.split(',').map(c=> +c.trim());
+    return _COMBIN(number, number_chosen);
 }
 
 export function COMBINA (params: string) {
@@ -430,8 +453,8 @@ export function COMBINA (params: string) {
     if (checkIsInvalid(number, number_chosen)) {
         throw Error(errors.VALUE);
     }
-    return (number === 0 && number_chosen === 0) ? 1 : exports.COMBIN(number + number_chosen - 1, number - 1);
-};
+    return (number === 0 && number_chosen === 0) ? 1 : _COMBIN(number + number_chosen - 1, number - 1);
+}
 
 export function FLOOR(params:string) {
     let [number, significance, mode] = params.split(',').map(c=> +c.trim());
@@ -476,25 +499,26 @@ export function GCD (params: string) {
         x += y;
     }
     return x;
-};
+}
 
 export function EQ (params: string) {
     let paramsArray = params.split(',').map(c=>c.trim());
     let [value1, value2] = paramsArray;
     if (paramsArray.length !== 2) {
-        return errors.NA;
+        throw Error(errors.NA);
+
     }
     return value1 === value2;
-};
+}
 
 export function NE (params: string) {
     let paramsArray = params.split(',').map(c=>c.trim());
     let [value1, value2] = paramsArray;
     if (paramsArray.length !== 2) {
-        return errors.NA;
+        throw Error(errors.NA);
     }
     return value1 !== value2;
-};
+}
 
 export function MOD (params: string) {
     let [dividend, divisor] = params.split(',').map(c=>+c.trim());
@@ -502,11 +526,11 @@ export function MOD (params: string) {
         throw Error(errors.VALUE);
     }
     if (divisor === 0) {
-        return errors.DIVBY0;
+        throw Error(errors.DIVBY0);
     }
     var modulus = Math.abs(dividend % divisor);
     return (divisor > 0) ? modulus : -modulus;
-};
+}
 
 export function MROUND (params: string) {
     let [number, multiple] = params.split(',').map(c=>+c.trim());
@@ -519,7 +543,7 @@ export function MROUND (params: string) {
     }
 
     return Math.round(number / multiple) * multiple;
-};
+}
 
 export function RADIANS (params: string) {
     let number = +params;
@@ -527,15 +551,15 @@ export function RADIANS (params: string) {
         throw Error(errors.VALUE);
     }
     return number * Math.PI / 180;
-};
+}
 
 export function RAND() {
     return Math.random();
-};
+}
 
 export function PI () {
     return Math.PI;
-};
+}
 
 export function MULTINOMIAL(params: string) {
     var args = params.split(',').map(c=>+c.trim());
@@ -546,10 +570,10 @@ export function MULTINOMIAL(params: string) {
     var divisor = 1;
     for (var i = 0; i < args.length; i++) {
         sum += args[i];
-        divisor *= exports.FACT(args[i]);
+        divisor *= _FACT(args[i]);
     }
-    return exports.FACT(sum) / divisor;
-};
+    return _FACT(sum) / divisor;
+}
 
 export function PRODUCT (params: string) {
     var args = params.split(',').map(c=>+c.trim());
@@ -561,7 +585,7 @@ export function PRODUCT (params: string) {
         result *= args[i];
     }
     return result;
-};
+}
 
 export function QUOTIENT  (params: string) {
     let [numerator, denominator] = params.split(',').map(c=>+c.trim());
@@ -570,7 +594,7 @@ export function QUOTIENT  (params: string) {
         throw Error(errors.VALUE);
     }
     return parseInt((numerator / denominator) + '', 10);
-};
+}
 
 export function DIVIDE (params: string) {
     const [dividend, divisor] = params.split(',').map(c=>+c.trim());
@@ -584,9 +608,8 @@ export function DIVIDE (params: string) {
     if (divisor === 0) {
         throw Error(errors.DIVBY0);
     }
-
     return dividend / divisor;
-};
+}
 
 
 
@@ -598,7 +621,7 @@ export function RANDBETWEEN (params: string) {
     // Creative Commons Attribution 3.0 License
     // Copyright (c) 2012 eqcode
     return bottom + Math.ceil((top - bottom + 1) * Math.random()) - 1;
-};
+}
 
 export function ROUND (params: string) {
     const [number, digits] = params.split(',').map(c=>+c.trim());
@@ -606,7 +629,7 @@ export function ROUND (params: string) {
         throw Error(errors.VALUE);
     }
     return Math.round(number * Math.pow(10, digits)) / Math.pow(10, digits);
-};
+}
 
 export function ROUNDDOWN (params: string) {
     const [number, digits] = params.split(',').map(c=>+c.trim());
@@ -615,7 +638,7 @@ export function ROUNDDOWN (params: string) {
     }
     var sign = (number > 0) ? 1 : -1;
     return sign * (Math.floor(Math.abs(number) * Math.pow(10, digits))) / Math.pow(10, digits);
-};
+}
 
 export function ROUNDUP (params: string) {
     const [number, digits] = params.split(',').map(c=>+c.trim());
@@ -624,7 +647,7 @@ export function ROUNDUP (params: string) {
     }
     var sign = (number > 0) ? 1 : -1;
     return sign * (Math.ceil(Math.abs(number) * Math.pow(10, digits))) / Math.pow(10, digits);
-};
+}
 
 export function ADD (param: string) {
     const params = param.split(',').map(c=>+c.trim())
@@ -635,9 +658,8 @@ export function ADD (param: string) {
     if (checkIsInvalid(num1, num2)) {
         throw Error(errors.VALUE)
     }
-
     return num1 + num2;
-};
+}
 
 export function MINUS (param: string) {
     const params = param.split(',').map(c=>+c.trim())
@@ -650,7 +672,7 @@ export function MINUS (param: string) {
     }
 
     return num1 - num2;
-};
+}
 
 export function MULTIPLY (param: string) {
     const params = param.split(',').map(c=>+c.trim());
@@ -662,7 +684,7 @@ export function MULTIPLY (param: string) {
         throw Error(errors.VALUE);
     }
     return factor1 * factor2;
-};
+}
 
 export function GTE  (param: string) {
     const params = param.split(',').map(c=>+c.trim())
@@ -674,7 +696,7 @@ export function GTE  (param: string) {
         throw Error(errors.VALUE);
     }
     return num1 >= num2;
-};
+}
 
 export function LT  (param: string) {
     const params = param.split(',').map(c=>+c.trim())
@@ -686,7 +708,7 @@ export function LT  (param: string) {
         throw Error(errors.VALUE);
     }
     return num1 < num2;
-};
+}
 
 export function LTE  (param: string) {
     const params = param.split(',').map(c=>+c.trim())
@@ -698,4 +720,4 @@ export function LTE  (param: string) {
         throw Error(errors.VALUE);
     }
     return num1 <= num2;
-};
+}

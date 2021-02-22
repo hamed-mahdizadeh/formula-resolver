@@ -38,6 +38,19 @@ export class DynamicResolver {
 
     public fnMap: Map<number, FunctionInfo> = new Map();
 
+    private convertResult(res: any): string {
+        if (typeof res === 'string') {
+            return res;
+        }
+        if (typeof res === 'number') {
+            return res + '';
+        }
+        if (typeof res === 'boolean') {
+            return String(res);
+        }
+        return '';
+    }
+
     private setFunctionResult(
         params: string,
         expression: string[],
@@ -49,7 +62,7 @@ export class DynamicResolver {
             result = params;
             start++;
         } else {
-            result = this.resolveFunction(expression[fnPointer], params);
+            result = this.convertResult(this.resolveFunction(expression[fnPointer], params));
         }
         let removeLength = pointer - start + 1;
         expression.splice(start, removeLength, result).length;
@@ -197,8 +210,8 @@ export class DynamicResolver {
         return this.calculate(preProcessedparamItem);
     }
 
-    resolve(expression: string, extraParams?: any): {result: string} {
-        const expressionParts = expression
+    resolve(expression: string, extraParams?: any): { result: string } {
+        const expressionParts = expression.trim().replace(/^=/gm, '')
             .split(this.seperatorRegex)
             .map(i => i.trim())
             .filter(i => i !== '');
@@ -229,7 +242,7 @@ export class DynamicResolver {
             expressionParts[index[i][0]] = `{{${methodCount++}}}`;
 
         }
-        const processedExpressionParts = expressionParts.filter(c => c !== '');
+        let processedExpressionParts = expressionParts.filter(c => c !== '');
         for (let i = 0; i < processedExpressionParts.length; i++) {
             let item = processedExpressionParts[i];
             if (this.fnPlaceHolder.test(item)) {
@@ -237,7 +250,11 @@ export class DynamicResolver {
                 processedExpressionParts[i] = this.resolvePreProcessedItem(fn, extraParams);
             }
         }
-        const result = this.calculate(processedExpressionParts);
+        let result = '';
+        processedExpressionParts = processedExpressionParts.filter(c => c !== undefined && c !== null && c !== '');
+        if (processedExpressionParts.length > 0) {
+            result = this.calculate(processedExpressionParts);
+        }
         return { result };
     }
 

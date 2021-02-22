@@ -71,7 +71,7 @@ passive and source properties of FunctionInfo class are not used in the current 
 ## **DynamicResolver**
 The resolve method of this class has more complex algorithm than normal resolver class so it is slower than normal resolver in most cases. This class is especially useful when you want to prevent the execution of your custom functions inside the conditional functions like **IF** or inside your costum conditional functions when the condition is not matched.
 
-    import { DynamicResolver } from "../src/dynamic-resolver";
+    import { DynamicResolver } from "node_modules/formula-resolver/dist/formula-resolver";
 
     let resolver: DynamicResolver = new DynamicResolver();
     class TestResolver implements CustomResolver {
@@ -95,6 +95,10 @@ The resolve method of this class has more complex algorithm than normal resolver
     resolver.register(new TestResolver());
     resolver.resolve(expression).result
 
+### Version 0.7.2 changes:
+Consumer build bug fixed.
+Some Math functions bug fixed.
+DynamicResolver for custom resolver method improved. 
 ### Version 0.7.1 changes:
 Optional **extraParams** parameter with type **any** has been added to **DynamicResolver** **resolve** method and it would be passed to your custom methods.
 ### Version 0.7.0 changes:

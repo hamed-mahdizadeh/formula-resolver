@@ -30,6 +30,19 @@ export class Resolver {
     private operatorsRegex = /(?<!\(|\)|\,|[+\-*\/=]|<(?=[^=])|>(?=[^=])|<>|>=|<=|[\^])([+\-*\/=]|<(?=[^=>])|(?<=[^<=])>|<>|>=|<=|[\^])/g;
     private operatorPriorities: Map<string, number> = new Map();
 
+    private convertResult(res: any): string {
+        if(typeof res === 'string') {
+            return res;
+        }
+        if(typeof res === 'number'){
+            return res + '';
+        }
+        if(typeof res === 'boolean') {
+            return String(res);
+        }
+        return '';
+    }
+
     private setFunctionResult(
         params: string,
         expression: string[],
@@ -41,7 +54,7 @@ export class Resolver {
             result = params;
             start++;
         } else {
-            result = this.resolveFunction(expression[fnPointer], params);
+            result = this.convertResult(this.resolveFunction(expression[fnPointer], params));
         }
         let removeLength = pointer - start + 1;
         expression.splice(start, removeLength, result).length;
@@ -176,7 +189,7 @@ export class Resolver {
     }
 
     resolve(expression: string, start: number = -1): {result: string} {
-        const expressionParts = expression
+        const expressionParts = expression.trim().replace(/^=/gm, '')
             .split(this.seperatorRegex)
             .map(i => i.trim())
             .filter(i => i !== '');
