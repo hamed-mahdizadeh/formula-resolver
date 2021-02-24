@@ -1,6 +1,6 @@
 {
   "name": "formula-resolver",
-  "version": "0.7.2",
+  "version": "0.7.5",
   "description": "",
   "main": "dist/formula-resolver.js",
   "types": "dist",
@@ -21,19 +21,19 @@
   "author": "Hamed Mahdizadeh <hamedmahdizadeh@gmail.com>",
   "license": "ISC",
   "devDependencies": {
-    "@types/jasmine": "^3.6.3",
+    "@types/jasmine": "^3.6.4",
     "jasmine": "^3.6.4",
     "jasmine-spec-reporter": "^6.0.0",
     "jasmine-ts": "^0.3.0",
     "ts-node": "^8.10.2",
-    "typescript": "^4.1.5",
-    "webpack": "^5.22.0",
+    "typescript": "^4.2.2",
+    "webpack": "^5.24.1",
     "webpack-cli": "^4.5.0",
     "webpack-dev-server": "^3.11.2"
   },
   "dependencies": {
     "eslint": "^7.20.0",
-    "eslint-webpack-plugin": "^2.5.1",
+    "eslint-webpack-plugin": "^2.5.2",
     "ts-loader": "^8.0.17"
   }
 }

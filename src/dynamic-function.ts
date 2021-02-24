@@ -20,7 +20,7 @@ function toSimpleParam(this: DynamicResolver, params:string[][], extraParams?:an
 export function resolveDynamicFunction(functionContext: DynamicResolver,fn: FunctionInfo, extraParams?: any) {
     switch (fn.fnName) {
         case 'IF':
-            return IF.bind(functionContext)(fn);
+            return IF.bind(functionContext)(fn, extraParams);
         default:
             const method = getMathFn(fn.fnName);
             if(method !== undefined) {

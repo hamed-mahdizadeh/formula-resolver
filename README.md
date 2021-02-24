@@ -95,7 +95,10 @@ The resolve method of this class has more complex algorithm than normal resolver
     resolver.register(new TestResolver());
     resolver.resolve(expression).result
 
-### Version 0.7.2 changes:
+### Version 0.7.5 changes:
+Dynamic If bug fixed.
+Few other bug fixes.
+### Version 0.7.4 changes:
 Consumer build bug fixed.
 Some Math functions bug fixed.
 DynamicResolver for custom resolver method improved. 
