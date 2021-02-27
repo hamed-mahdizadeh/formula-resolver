@@ -13,24 +13,26 @@ export class DynamicResolver {
 
     private setOperatorPriorities() {
         this.operatorPriorities
-            .set('=', 1)
-            .set('>', 1)
-            .set('<>', 1)
-            .set('<', 1)
-            .set('=', 1)
             .set('^', 2)
             .set('*', 3)
             .set('/', 3)
             .set('+', 4)
-            .set('-', 4);
+            .set('-', 4)
+            .set('=', 5)
+            .set('>', 5)
+            .set('<>', 5)
+            .set('<', 5)
+            .set('=', 5)
     }
 
 
-    private seperatorRegex = /(\(|\)|\,|[+\-*\/=]|<(?=[^=>])|(?<=[^<=])>|<>|>=|<=|[\^])/g;
+    //private seperatorRegex = /(\(|\)|\,|[+\-*\/=]|<(?=[^=>])|(?<=[^<=])>|<>|>=|<=|[\^])/g;
+    private seperatorRegex = /((?<![+\-*\/]|<>|>=|<=|[><=\(,\^])[+\-*\/]|>=|<=|<>|[<>=\^]|[\(\),])/g;
     private operatorsRegexAtomic = /^([+\-*\/=]|<>|>=|<=|>|<|[\^])$/;
     private stringVariableRegex = /".*"/g;
     private functionNameRegex = /[a-zA-Z][a-zA-Z\d]*/;
-    private operatorsRegex = /(?<!\(|\)|\,|[+\-*\/=]|<(?=[^=])|>(?=[^=])|<>|>=|<=|[\^])([+\-*\/=]|<(?=[^=>])|(?<=[^<=])>|<>|>=|<=|[\^])/g;
+    //private operatorsRegex = /(?<!\(|\)|\,|[+\-*\/=]|<(?=[^=])|>(?=[^=])|<>|>=|<=|[\^])([+\-*\/=]|<(?=[^=>])|(?<=[^<=])>|<>|>=|<=|[\^])/g;
+    private operatorsRegex = /((?<![+\-*\/\^]|<>|>=|<=|[><=])[+\-*\/\^]|>=|<=|<>|[<>=])/g;
     private fnPlaceHolder = /{{\d+}}/;
     private fnKey = /(?<={{)\d+(?=}})/;
     private operatorPriorities: Map<string, number> = new Map();

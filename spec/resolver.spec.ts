@@ -38,6 +38,30 @@ describe('Calculate Excel-Like Filled Formula', () => {
         expect(resolver.resolve(expression).result).toBe('392');
     });
 
+    it('Should Calculate Result OF -80<0 which is true', () => {
+        const expression = '-80<0';
+        expect(resolver.resolve(expression).result).toBe('true');
+    });
+    it('Should Calculate Result OF -124+123+3-4>0 which is false', () => {
+        const expression = '-124+123+3-4>0';
+        expect(resolver.resolve(expression).result).toBe('false');
+    });
+    it('Should Calculate Result OF SUM(-10,9)+3-1<0 which is false', () => {
+        const expression = 'SUM(-10,9)+3-1<0';
+        expect(resolver.resolve(expression).result).toBe('false');
+    });
+    it('Should Calculate Result OF SUM(-10,9)+3-4<0 which is true', () => {
+        const expression = 'SUM(-10,9)+3-4<0';
+        expect(resolver.resolve(expression).result).toBe('true');
+    });
+    it('Should Calculate Result OF SUM(-10,9)+3-4>0 which is false', () => {
+        const expression = 'SUM(-10,9)+3-4>0';
+        expect(resolver.resolve(expression).result).toBe('false');
+    });
+    it('Should Calculate Result OF SUM(-10,9)+3-2>=0 which is true', () => {
+        const expression = 'SUM(-10,9)+3-2>=0';
+        expect(resolver.resolve(expression).result).toBe('true');
+    });
 
 
     const registerPrintFunction = () => {

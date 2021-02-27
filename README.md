@@ -95,6 +95,8 @@ The resolve method of this class has more complex algorithm than normal resolver
     resolver.register(new TestResolver());
     resolver.resolve(expression).result
 
+### Version 0.7.6 changes:
+Comare operaor some bug fixes
 ### Version 0.7.5 changes:
 Dynamic If bug fixed.
 Few other bug fixes.

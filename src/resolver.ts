@@ -10,16 +10,18 @@ export class Resolver {
 
     private setOperatorPriorities() {
         this.operatorPriorities
-            .set('=', 1)
-            .set('>', 1)
-            .set('<>', 1)
-            .set('<', 1)
-            .set('=', 1)
             .set('^', 2)
             .set('*', 3)
             .set('/', 3)
             .set('+', 4)
-            .set('-', 4);
+            .set('-', 4)
+            .set('=', 5)
+            .set('>', 5)
+            .set('<>', 5)
+            .set('<', 5)
+            .set('>=', 5)
+            .set('<=', 5)
+            .set('=', 5);
     }
 
 
@@ -27,7 +29,12 @@ export class Resolver {
     private operatorsRegexAtomic = /^([+\-*\/=]|<>|>=|<=|>|<|[\^])$/;
     private stringVariableRegex = /".*"/g;
     private functionNameRegex = /[a-zA-Z][a-zA-Z\d]*/;
-    private operatorsRegex = /(?<!\(|\)|\,|[+\-*\/=]|<(?=[^=])|>(?=[^=])|<>|>=|<=|[\^])([+\-*\/=]|<(?=[^=>])|(?<=[^<=])>|<>|>=|<=|[\^])/g;
+    //private operatorsRegex = /(?<!\(|\)|\,|[+\-*\/=]|<(?=[^=])|>(?=[^=])|<>|>=|<=|[\^])([+\-*\/=]|<(?=[^=>])|(?<=[^<=])>|<>|>=|<=|[\^])/g;
+    // private operatorsRegex = /((>=)|(<>)|(<=)|[<>=\-+*\/,\^])/g;
+    // private operatorsRegex = /((>=)|(<>)|(<=)|[<>=\-+*\/,\^](?<=[^-+]))/g;
+    private operatorsRegex = /((?<![+\-*\/\^]|<>|>=|<=|[><=])[+\-*\/\^]|>=|<=|<>|[<>=])/g;
+
+    
     private operatorPriorities: Map<string, number> = new Map();
 
     private convertResult(res: any): string {
@@ -152,11 +159,12 @@ export class Resolver {
     }
 
     private calculate(expression: string) {
-        const itemList = expression
-            .split(this.operatorsRegex)
-            .filter(c => c.trim() !== '');
+        let itemList = expression
+        .split(this.operatorsRegex);
+        itemList = itemList
+            .filter(c => c !== undefined && c.trim() !== '');
         const operators: { operator: string, index: number }[] = []
-        itemList.filter(c => c.trim() !== '').forEach((v, i) => {
+        itemList.forEach((v, i) => {
             if (this.operatorsRegexAtomic.test(v)) {
                 operators.push({ operator: v, index: i });
             }
