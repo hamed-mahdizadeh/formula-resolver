@@ -1,4 +1,5 @@
-# FORMULA RESOLVER [![npm version](https://badge.fury.io/js/formula-resolver.svg)](https://badge.fury.io/js/formula-resolver) ![npm](https://img.shields.io/npm/dt/formula-resolver?style=plastic)
+# FORMULA RESOLVER [![npm version](https://badge.fury.io/js/formula-resolver.svg)](https://badge.fury.io/js/formula-resolver) ![npm](https://img.shields.io/npm/dt/formula-resolver?style=plastic)![build](https://travis-ci.com/hamed-mahdizadeh/formula-resolver.svg?branch=master)
+
 
 ### This is a simple formula parser which support excel functions and mathematical operators.
 ### The library has been written  by TypeScript. 
