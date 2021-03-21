@@ -30,18 +30,18 @@ describe('Calculate Excel-Like Filled Formula', () => {
     it('Expression IF(true=true,DO(1),DO(2)) Should call DO method only one time with parameter [["1"]] In DynamicResolver.resolve', () => {
         let testResolver = new TestResolver();
         spyOn(testResolver, 'DO').and.returnValue('-1');
-        const expression = 'IF(true=true,DO(1),DO(2))';
+        const expression = 'IF(true=true,DO(A1),DO(A2))';
         
         resolver.register(testResolver);
         resolver.resolve(expression);
-        expect(testResolver.DO).toHaveBeenCalledOnceWith([['1']]);
+        expect(testResolver.DO).toHaveBeenCalledOnceWith([['A1']]);
     });
 
-    it('Expression IF(true=true,DO(1),DO(2)) Should have Result 1 DynamicResolver.resolve', () => {
-        const expression = 'IF(true=true,DO(1),DO(2))';
+    it('Expression IF(true=true,DO(A1),DO(A2)) Should have Result 1 DynamicResolver.resolve', () => {
+        const expression = 'IF(true=true,DO(A1),DO(A2))';
         
         resolver.register(new TestResolver());
-        expect(resolver.resolve(expression).result).toBe('1');
+        expect(resolver.resolve(expression).result).toBe('A1');
     });
 
     it('Expression 50 + IF(true=true,ABS(-1000000),ABS(1000/0)) Should have Result 1000050 DynamicResolver.resolve', () => {
